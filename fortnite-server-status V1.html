@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Fortnite Serverstatus (Live)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: #fff;
+      text-align: center;
+      padding: 50px;
+    }
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+
+    .status {
+      font-size: 1.5em;
+      padding: 20px;
+      margin: 20px auto;
+      border-radius: 8px;
+      display: inline-block;
+      min-width: 300px;
+      transition: all 0.3s ease;
+      animation: fadeIn 1s ease-out;
+    }
+
+    .operational {
+      background-color: #28a745;
+      box-shadow: 0 0 15px #28a745, 0 0 30px #28a745;
+    }
+
+    .degraded {
+      background-color: #ffc107;
+      color: #000;
+      box-shadow: 0 0 15px #ffc107;
+    }
+
+    .partial {
+      background-color: #fd7e14;
+      box-shadow: 0 0 15px #fd7e14;
+    }
+
+    .major {
+      background-color: #dc3545;
+      box-shadow: 0 0 15px #dc3545, 0 0 30px #dc3545;
+    }
+
+    .unknown {
+      background-color: #6c757d;
+      box-shadow: 0 0 15px #6c757d;
+    }
+
+    @keyframes fadeIn {
+
+0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Fortnite Serverstatus (Live)</h1>
+  <div id="status" class="status unknown">Lade Status...</div>
+
+  <script>
+    async function ladeStatus() {
+      try {
+        const response = await fetch('https://status.epicgames.com/api/v2/summary.json');
+        const data = await response.json();
+        const fortniteComponent = data.components.find(comp => comp.name === "Fortnite");
+
+        const statusElement = document.getElementById('status');
+        const status = fortniteComponent.status;
+
+        switch (status) {
+          case 'operational':
+            statusElement.textContent = '✅ Server online.';
+            statusElement.className = 'status operational';
+            break;
+          case 'degraded_performance':
+            statusElement.textContent = '⚠ Fortnite hat Leistungsprobleme.';
+            statusElement.className = 'status degraded';
+            break;
+          case 'partial_outage':
+            statusElement.textContent = '🟠 Teilweiser Ausfall.';
+            statusElement.className = 'status partial';
+            break;
+          case 'major_outage':
+            statusElement.textContent = '🔴 Server offline!';
+            statusElement.className = 'status major';
+
+break;
+          default:
+            statusElement.textContent = '❓ Unbekannter Status.';
+            statusElement.className = 'status unknown';
+        }
+      } catch (error) {
+        const statusElement = document.getElementById('status');
+        statusElement.textContent = '🚫 Fehler beim Laden.';
+        statusElement.className = 'status major';
+        console.error(error);
+      }
+    }
+
+    // Direkt laden + alle 1 Sekunden aktualisieren
+    ladeStatus();
+    setInterval(ladeStatus, 1000);
+  </script>
+</body>
+</html>
